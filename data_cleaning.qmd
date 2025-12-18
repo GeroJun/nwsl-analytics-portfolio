@@ -1,0 +1,246 @@
+---
+title: "soccer_cleanup"
+author: "Gero (Victor) Jun"
+date: "`r Sys.Date()`"
+format: 
+  html:
+    self-contained: true
+    toc: true
+    toc_float: true
+    number_section: false
+    highlight: "tango"
+    theme: "cosmo"
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| label: load-packages
+#| message: false
+library(tidyverse)
+library(viridis)
+library(kableExtra)
+library(ggridges)
+library(scales)
+#install.packages("devtools")
+devtools::install_github("nwslR/nwslR", ref = "v0.0.0.9002")
+library(nwslR)
+install.packages(plotly)
+library(plotly)
+```
+
+```{r}
+#| label: load-data
+#| message: false
+matches <- load_matches()
+players <- load_players()
+teams <- load_teams()
+metrics <- load_metrics()
+```
+
+```{r}
+
+#Get team_id of Portland Thorns FC
+portland_thorns_id <- teams %>%
+  filter(team_name == "Portland Thorns FC") %>%
+  pull(external_team_id)
+
+#Based on portland id, get the matches they played in 2023
+portland_thorns_matches <- matches %>%
+  filter((home_team_id == portland_thorns_id | away_team_id == portland_thorns_id) & season == "2023") %>%
+  pull(match_id)
+
+# Load player stats for all 2023 Portland Thorns matches
+all_thorns_player_stats <- map_dfr(
+  portland_thorns_matches, 
+  ~ load_player_match_stats(match_id = .x)  
+) %>%
+  filter(team_id == portland_thorns_id)
+
+# Load team stats for all 2023 Portland Thorns matches
+team_match_stats <- map_dfr(
+  portland_thorns_matches, 
+  ~ load_team_match_stats(match_id = .x)  
+) %>%
+  filter(team_id == portland_thorns_id & period == 'total')
+
+```
+
+```{r}
+# create a new table that contains narrows down the information regarding fastbreaks within the player_match_stats table.
+fastbreak_stats <- all_thorns_player_stats %>%
+  select(
+    player_id, match_id, team_id, 
+    contains("fastbreaks"),          
+    contains("shots_fastbreak"), 
+    contains("goals_fastbreak"), 
+    goals, assists, shots_total     
+  )
+```
+
+```{r}
+# create a new variable that calculate the total sums of fastbreaks and shots_fastbreak for each player
+total_fastbreaks <- sum(fastbreak_stats$fastbreaks, na.rm = TRUE)
+total_fastbreaks #within 2023
+total_fastbreaks_shots <- sum(fastbreak_stats$shots_fastbreak, na.rm = TRUE)
+total_fastbreaks_shots #within 2023
+total_fastbreaks_goals <- sum(fastbreak_stats$goals_fastbreak, na.rm = TRUE)
+total_fastbreaks_goals #within 2023-
+
+#I want to get the average of possession_pct within team_match_stats_total
+average_possession_pct <- mean(team_match_stats$possession_pct, na.rm = TRUE)
+
+```
+
+```{r}
+attempts_to_shots <- data.frame(
+  stage = c("Fastbreak Attempts", "Shot Opportunities"),
+  count = c(total_fastbreaks, total_fastbreaks_shots),
+  conversion_rate = c(100, (total_fastbreaks_shots/total_fastbreaks)*100)
+)
+
+# Create visualization
+ggplot(attempts_to_shots, aes(x = stage, y = count, fill = stage)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = paste0(count, "\n(", round(conversion_rate, 1), "%)")), 
+            vjust = -0.5, size = 5) +
+  scale_fill_manual(values = c("#8C489F", "#FFD700")) +
+  labs(
+    title = "Portland Thorns FC: Fastbreak to Shot Conversion (2023)",
+    subtitle = paste("Conversion Rate:", round((total_fastbreaks_shots/total_fastbreaks)*100, 1), "%"),
+    x = NULL,
+    y = "Count",
+    caption = "Data: NWSL (2023)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    axis.text.x = element_text(size = 12),
+    legend.position = "none"
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.1)))
+```
+
+```{r}
+library(ggplot2)
+
+# Sample data (replace with your actual data)
+total_fastbreaks_shots <- 30   # Example: Total fastbreak shots
+total_fastbreaks_goals <- 5    # Example: Goals from fastbreaks
+
+# Create data frame
+shot_goal_data <- data.frame(
+  stage = c("Fastbreak Shots", "Fastbreak Goals"),
+  count = c(total_fastbreaks_shots, total_fastbreaks_goals),
+  conversion_rate = c(
+    100,  # Baseline (all shots)
+    (total_fastbreaks_goals / total_fastbreaks_shots) * 100  # Conversion rate
+  )
+)
+
+# Plot
+ggplot(shot_goal_data, aes(x = stage, y = count, fill = stage)) +
+  geom_col(width = 0.6, fill = c("#FFD700", "#006341")) +
+  geom_text(
+    aes(label = paste0(count, "\n(", round(conversion_rate, 1), "%)")),
+    vjust = -0.5, size = 5, color = "black"
+  ) +
+  labs(
+    title = "Portland Thorns FC: Fastbreak Finishing (2023)",
+    subtitle = "Conversion rate from fastbreak shots to goals",
+    x = NULL,
+    y = "Count",
+    caption = "Data: NWSL (2023)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    axis.text.x = element_text(size = 12),
+    legend.position = "none"
+  )
+```
+
+```{r}
+offensive_team_stats <- all_thorns_player_stats %>%
+  select(
+    player_id, match_id, team_id, 
+    contains("big_chances_created"),    
+    contains("big_chances_scored"), 
+    contains("big_chances_missed"), 
+    contains("contests_total"),
+    contains("contests_won"),
+    contains('pass_pct_opposition_half'),
+  )
+```
+
+```{r}
+#I want to access the data from load_player_season_stats
+portland_thorns_player_season_stats <- load_player_season_stats(
+  team_id = "POR",  # Already defined in your code
+  season = "2023"
+)
+portland_thorns_team_season_stats <- load_team_season_stats(
+  team_id = "POR",  # Already defined in your code
+  season = "2023"
+)
+```
+
+```{r}
+pass_pct <- portland_thorns_team_season_stats %>%
+  pull(contains('pass_pct_opposition_half')) %>%
+  as.numeric()
+```
+
+```{r}
+# Calculate average of each column in offensive_team_stats
+offensive_stats_avg <- offensive_team_stats %>%
+  summarize(across(where(is.numeric), ~ mean(., na.rm = TRUE)))
+```
+
+```{r}
+total_contests <- sum(offensive_team_stats$contests_total, na.rm = TRUE)
+total_contests_won <- sum(offensive_team_stats$contests_won, na.rm = TRUE)
+total_big_chances_created <- sum(offensive_team_stats$big_chances_created, na.rm = TRUE)
+total_big_chances_scored <- sum(offensive_team_stats$big_chances_scored, na.rm = TRUE)
+total_big_chances_missed <- sum(offensive_team_stats$big_chances_missed, na.rm = TRUE)
+```
+
+```{r}
+contest_data <- data.frame(
+  category = c("Contests Won", "Contests Lost"),
+  count = c(total_contests_won, total_contests - total_contests_won)
+)
+
+ggplot(contest_data, aes(x = "Contests", y = count, fill = category)) +
+  geom_col() +
+  geom_text(aes(label = count), position = position_stack(vjust = 0.5)) +
+  scale_fill_manual(values = c("#006341", "#8C489F")) +  # Thorns colors
+  labs(
+    title = "Portland Thorns FC: Contest Success (2023)",
+    subtitle = paste0("Win rate: ", round(total_contests_won / total_contests * 100, 1), "%"),
+    x = NULL,
+    y = "Total Contests",
+    fill = "Outcome"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+big_chance_data <- data.frame(
+  stage = c("Created", "Scored"),
+  count = c(total_big_chances_created, total_big_chances_scored)
+)
+
+ggplot(big_chance_data, aes(x = stage, y = count, fill = stage)) +
+  geom_col() +
+  geom_text(aes(label = abs(count)), vjust = -0.5) +
+  scale_fill_manual(values = c("#FFD700", "#8C489F")) +
+  labs(
+    title = "Big Chances: Creation vs. Conversion (2023)",
+    subtitle = paste0("Conversion rate: ", round(total_big_chances_scored / total_big_chances_created * 100, 1), "%"),
+    x = NULL,
+    y = "Count"
+  ) +
+  theme_minimal()
+```

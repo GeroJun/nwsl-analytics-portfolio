@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.554">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Katie Fitzgerald">
+<meta name="author" content="Gero (Victor) Jun">
+<meta name="dcterms.date" content="2025-06-04">
+<meta name="description" content="Exploring soccer statistics through visualizations">
+
+<title>National Women’s Soccer League</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="index_files/libs/clipboard/clipboard.min.js"></script>
+<script src="index_files/libs/quarto-html/quarto.js"></script>
+<script src="index_files/libs/quarto-html/popper.min.js"></script>
+<script src="index_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="index_files/libs/quarto-html/anchor.min.js"></script>
+<link href="index_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="index_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="index_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#welcome-video" id="toc-welcome-video" class="nav-link active" data-scroll-target="#welcome-video">Welcome video</a></li>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link" data-scroll-target="#learning-objectives">Learning Objectives</a></li>
+  <li><a href="#soccer-lingo-introduction" id="toc-soccer-lingo-introduction" class="nav-link" data-scroll-target="#soccer-lingo-introduction">Soccer Lingo &amp; Introduction</a>
+  <ul class="collapse">
+  <li><a href="#the-basics" id="toc-the-basics" class="nav-link" data-scroll-target="#the-basics">The basics</a></li>
+  </ul></li>
+  <li><a href="#variable-descriptions" id="toc-variable-descriptions" class="nav-link" data-scroll-target="#variable-descriptions">Variable descriptions</a></li>
+  <li><a href="#getting-started-data-wrangling" id="toc-getting-started-data-wrangling" class="nav-link" data-scroll-target="#getting-started-data-wrangling">Getting Started (Data Wrangling)</a>
+  <ul class="collapse">
+  <li><a href="#loading-packages-and-data" id="toc-loading-packages-and-data" class="nav-link" data-scroll-target="#loading-packages-and-data">Loading Packages and Data</a></li>
+  <li><a href="#loading-portland-thorns-fc-matches-2023" id="toc-loading-portland-thorns-fc-matches-2023" class="nav-link" data-scroll-target="#loading-portland-thorns-fc-matches-2023">Loading Portland Thorns FC Matches 2023</a></li>
+  </ul></li>
+  <li><a href="#research-question-1" id="toc-research-question-1" class="nav-link" data-scroll-target="#research-question-1">Research Question 1</a>
+  <ul class="collapse">
+  <li><a href="#loading-the-defensive-stats-information-from-portland-thorns-fc" id="toc-loading-the-defensive-stats-information-from-portland-thorns-fc" class="nav-link" data-scroll-target="#loading-the-defensive-stats-information-from-portland-thorns-fc">Loading the defensive stats information from Portland Thorns FC</a></li>
+  <li><a href="#visualizing-portland-thorns-fc-fastbreak-stats" id="toc-visualizing-portland-thorns-fc-fastbreak-stats" class="nav-link" data-scroll-target="#visualizing-portland-thorns-fc-fastbreak-stats">Visualizing Portland Thorns FC fastbreak stats</a></li>
+  </ul></li>
+  <li><a href="#research-question-2" id="toc-research-question-2" class="nav-link" data-scroll-target="#research-question-2">Research Question 2</a>
+  <ul class="collapse">
+  <li><a href="#loading-the-attack-stats-information-from-portland-thorns-fc" id="toc-loading-the-attack-stats-information-from-portland-thorns-fc" class="nav-link" data-scroll-target="#loading-the-attack-stats-information-from-portland-thorns-fc">Loading the attack stats information from Portland Thorns FC</a></li>
+  <li><a href="#visualizing-portland-thorns-fc-offensive-stats" id="toc-visualizing-portland-thorns-fc-offensive-stats" class="nav-link" data-scroll-target="#visualizing-portland-thorns-fc-offensive-stats">Visualizing Portland Thorns FC offensive stats</a></li>
+  </ul></li>
+  <li><a href="#wrap-up-reflection" id="toc-wrap-up-reflection" class="nav-link" data-scroll-target="#wrap-up-reflection">Wrap-up / reflection</a></li>
+  <li><a href="#bonus" id="toc-bonus" class="nav-link" data-scroll-target="#bonus">BONUS</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+</div>
+<main class="content page-columns page-full" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">National Women’s Soccer League</h1>
+</div>
+
+<div>
+  <div class="description">
+    Exploring soccer statistics through visualizations
+  </div>
+</div>
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Authors</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">Katie Fitzgerald <a href="mailto:kfitzgerald@apu.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Azusa Pacific University
+          </p>
+      </div>
+    <div class="quarto-title-meta-contents">
+    <p class="author">Gero (Victor) Jun </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Azusa Pacific University
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 4, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="welcome-video" class="level3">
+<h3 class="anchored" data-anchor-id="welcome-video">Welcome video</h3>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/5-aLUUAz6Hk?si=gosw_d70ebtKYKtL" title="SCORE: Boston Marathon Finish Times">
+</iframe>
+</section>
+<section id="learning-objectives" class="level1">
+<h1>Learning Objectives</h1>
+<p>In this module, you will be analyzing data from the National Women’s Soccer League (NWSL) season in 2016-22. The goal of this module is to allow students to data wrangle and create data visaulizations out of large data sets to be able to answer research questions for this sport. Data comes in many different forms, and an important part of being a good analyst is knowing what visualizations and analyses are appropriate and will provide insight into the data you have.</p>
+<div class="callout callout-style-simple callout-note no-icon callout-titled" title="Learning Objectives">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Learning Objectives
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>By the end of this module, you will be able to:</p>
+<ul>
+<li><p>Import and wrangle large sports datasets using R</p></li>
+<li><p>Filter and manipulate NWSL data to answer specific research questions</p></li>
+<li><p>Calculate key soccer statistics and performance metrics</p></li>
+<li><p>Use R to visualize the following types of variables:</p>
+<ul>
+<li>one numeric variable (histogram, boxplot)</li>
+<li>one categorical variable (simple bar plot)</li>
+<li>two categorical variables (stacked and standardized bar plots)</li>
+<li>one numeric + one categorical variable (faceted histogram, ridge plots, side-by-side boxplots)</li>
+<li>more than two variables (scatterplot with color or size aesthetic)</li>
+</ul></li>
+<li><p>Use R to visualize and analyze:</p>
+<ul>
+<li>Team performance metrics (goals, possession, conversion rates)</li>
+<li>Player statistics (contests won, big chances created)</li>
+<li>Comparative effectiveness of offensive vs.&nbsp;defensive strategies</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled" title="Research Questions">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Research Questions
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>During this lab, these are some fo the research questions that you’ll answer.</p>
+<ul>
+<li>How many teams were in the league starting their first season since 2016?</li>
+<li>What is the highest amount of goals a Portland Thorn FC player scored in a match in 2023?</li>
+<li>Which Portland Thorns FC player had the most attempts of fastbreak shots in 2023?</li>
+<li>Is a defensive lineup effective for the Portland Thorns FC team for scoring goals?</li>
+<li>What player_id is the best at winning contests? How did you figured that out?</li>
+<li>Is an offensive lineup effective for Portland Thorns FC for scoring goals?</li>
+<li>Should Portland Thorns FC prioritize offensive or defensive strategies based on their 2023 performance?</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="soccer-lingo-introduction" class="level1 page-columns page-full">
+<h1>Soccer Lingo &amp; Introduction</h1>
+<p>Before we start working with the data, it is important to understand some of the soccer lingo that will be used throughout this lab. This will help you better understand the data and the visualizations that you will create.</p>
+
+<div class="no-row-height column-margin column-container"><section id="be-the-first-team-to-win-3-sets-to-25-points" class="level4">
+<h4 class="anchored" data-anchor-id="be-the-first-team-to-win-3-sets-to-25-points">Be the first team to win 3 sets to 25 points!!</h4>
+<p><img src="soccer_image.png" class="img-fluid"> Image source: <a href="https://boxoutsports.com/graphics/quick-scores/soccer-brush-score">BoxOut Sports</a></p>
+</section><div class="">
+<p>Totally new to soccer? Watch this 6-minute video: <a href="https://www.youtube.com/watch?v=cTCgU4Vz0rE">Rules Of Soccer : How to play Soccer : Soccer Rules for Beginners</a></p>
+</div></div>
+<section id="the-basics" class="level3">
+<h3 class="anchored" data-anchor-id="the-basics">The basics</h3>
+<ul>
+<li>A <strong>soccer match</strong> is played between two teams, each consisting of 11 players.</li>
+<li>A match consists of two 45-minute halves (plus stoppage time).</li>
+<li>Teams score by getting the ball into the opponent’s goal.</li>
+<li>The team with more goals at full-time wins (or draws if tied).</li>
+<li>Having an <strong>offensive lineup</strong> means having more players focused on scoring goals (meaning that more of the 11 players are going to be past the midfield trying to help score goals)</li>
+<li>Having a <strong>defensive lineup</strong> means having more players focused on preventing the opponent from scoring (meaning that more of the 11 players are going to be behind the midfield trying to prevent the rival team from scoring goals).</li>
+<li><strong>Contests</strong> refer to the number of times a player challenges an opponent for possession of the ball, either by winning it or losing it.</li>
+<li>A <strong>fast break</strong> is a quick offensive move where a team attempts to advance the ball rapidly toward the opponent’s goal before the defense can organize itself. This strategy often occurs when the defending team is caught out of position, such as when they have pushed up high and lack depth, making them vulnerable to through balls.</li>
+</ul>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Soccer “stats” that might occur during any given play
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>An <a href="https://www.youtube.com/watch?v=XKAV4qRIvJ8"><strong>goal</strong></a> a goal is scored when the ball completely crosses the goal line between the goalposts and beneath the crossbar, resulting in a point for the attacking team.</li>
+<li>A <a href="https://www.youtube.com/watch?v=Yyk-y7qK3ys"><strong>dribble</strong></a> is when a player runs with the ball at their feet, maneuvering it past opponents.)</li>
+<li>An <a href="https://www.youtube.com/watch?v=qW7BNZBwTqk"><strong>assist</strong></a> is when a player passes or sets the ball to a teammate who attacks the ball for a goal.</li>
+<li>A <a href="https://www.youtube.com/watch?v=5Yo23e0hB48"><strong>player roles</strong></a> consists of different positions that players play in the field, such as goalkeeper, defender, midfielder, and forward.</li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="variable-descriptions" class="level1">
+<h1>Variable descriptions</h1>
+<p>The NWSL data contains several variables that are important for understanding the performance of teams and players. Here are some key variables you will encounter:</p>
+<table class="table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>matches</code></td>
+<td>information of every match played in every season</td>
+</tr>
+<tr class="even">
+<td><code>players</code></td>
+<td>information of each player that played in every team</td>
+</tr>
+<tr class="odd">
+<td><code>teams</code></td>
+<td>information of every team of NWSL</td>
+</tr>
+<tr class="even">
+<td><code>team_id</code></td>
+<td>Unique identifier for the team.</td>
+</tr>
+<tr class="odd">
+<td><code>team_name</code></td>
+<td>The full official name of the team</td>
+</tr>
+<tr class="even">
+<td><code>team_name_short</code></td>
+<td>A shortened or common name for the team</td>
+</tr>
+<tr class="odd">
+<td><code>team_club_name</code></td>
+<td>The parent club or organization name, if different from the team name</td>
+</tr>
+<tr class="even">
+<td><code>team_abbreviation</code></td>
+<td>A standard abbreviation</td>
+</tr>
+<tr class="odd">
+<td><code>first_season</code></td>
+<td>The first season the team participated in the dataset</td>
+</tr>
+<tr class="even">
+<td><code>last_season</code></td>
+<td>The last season the team participated (if inactive) or NULL</td>
+</tr>
+<tr class="odd">
+<td><code>external_team_id</code></td>
+<td>An identifier from an external system</td>
+</tr>
+<tr class="even">
+<td><code>last_updated</code></td>
+<td>Timestamp of when the team’s data was last updated.</td>
+</tr>
+<tr class="odd">
+<td>…</td>
+<td>…</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="getting-started-data-wrangling" class="level1 page-columns page-full">
+<h1>Getting Started (Data Wrangling)</h1>
+<section id="loading-packages-and-data" class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="loading-packages-and-data">Loading Packages and Data</h2>
+<p>The first step to any analysis in R is to <strong>load necessary packages and data</strong>.</p>
+<p>By running the following code, you will setup all the libraries and packages that are needed to be able to manage and access the soccer data for this lab.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(viridis)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggridges)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("devtools")</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"nwslR/nwslR"</span>, <span class="at">ref =</span> <span class="st">"v0.0.0.9002"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nwslR)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>The <code>nwslR</code> package provides functions to access the National Women’s Soccer League (NWSL) data.</p>
+</div></div><p>Now that we have the RStudio environment set up, we can load the soccer data so we can start seeing what type of information we are working with. To do this, we are going to create variables by which we are going to assign the data information. (In this case, the variables are called <code>matches</code>, <code>players</code>, <code>teams</code>, and <code>metrics</code>, but you can change the name to whatever makes more sense to you.)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>matches <span class="ot">&lt;-</span> <span class="fu">load_matches</span>()</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>players <span class="ot">&lt;-</span> <span class="fu">load_players</span>()</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>teams <span class="ot">&lt;-</span> <span class="fu">load_teams</span>()</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>metrics <span class="ot">&lt;-</span> <span class="fu">load_metrics</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>Through those 4 variables, you now have access to all the matches that have been played, all the players, all the teams, and all the metrics that are available for the NWSL. The data is separated in such a way because it becomes much easier to manipulate and analyze the data when it is organized in this way. matches, players, and teams have actual data that you can analyze and manipulate for research questions, while metrics is a list of variables that exists within the data that you can use to analyze the data.</p>
+</div></div><p>Perfect! Now that everything worked out, use the View() function to be able to see what type of information is available in each variable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">View</span>(matches)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#replace `matches` with `players`, `teams`, and `metrics` to see the other data sets</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Hint. (<code>matches</code> should look somewhat like this)</p>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">team_id</th>
+<th style="text-align: left;">team_name</th>
+<th style="text-align: left;">team_name_short</th>
+<th style="text-align: left;">team_club_name</th>
+<th style="text-align: left;">team_abbreviation</th>
+<th style="text-align: left;">…</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>1</strong></td>
+<td style="text-align: left;">b8b7m094941l37s57ky5qydje</td>
+<td style="text-align: left;">Boston&nbsp;Breakers</td>
+<td style="text-align: left;">Boston&nbsp;Breakers</td>
+<td style="text-align: left;">Boston&nbsp;Breakers</td>
+<td style="text-align: left;">BOS</td>
+<td style="text-align: left;">…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>2</strong></td>
+<td style="text-align: left;">dzxypx8djih58p668surbi4qm</td>
+<td style="text-align: left;">Chicago&nbsp;Red&nbsp;Stars</td>
+<td style="text-align: left;">Chicago&nbsp;Red&nbsp;Stars</td>
+<td style="text-align: left;">Chicago&nbsp;Red&nbsp;Stars</td>
+<td style="text-align: left;">CHI</td>
+<td style="text-align: left;">…</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>3</strong></td>
+<td style="text-align: left;">84o73tduvg052h5xf8fp1kfpe</td>
+<td style="text-align: left;">FC&nbsp;Kansas&nbsp;City</td>
+<td style="text-align: left;">FC&nbsp;Kansas&nbsp;City</td>
+<td style="text-align: left;">FC&nbsp;Kansas&nbsp;City</td>
+<td style="text-align: left;">KC</td>
+<td style="text-align: left;">…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>4</strong></td>
+<td style="text-align: left;">c3v2ohfuzoqmc8ljm65hi80sj</td>
+<td style="text-align: left;">Houston&nbsp;Dash</td>
+<td style="text-align: left;">Houston&nbsp;Dash</td>
+<td style="text-align: left;">Houston&nbsp;Dash</td>
+<td style="text-align: left;">HOU</td>
+<td style="text-align: left;">…</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled" title="Exercise 1">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise 1
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="a">
+<li><p>When you view the ‘matches’ and ‘teams’ data sets, <strong>how are the teams identified within ‘matches’ data set?</strong> What column variable is used to identify the team within the ‘teams’ data set?</p></li>
+<li><p>When you view the <code>metrics</code> data set and search for <code>fast break</code>, <strong>what are the variables that are available to analyze fast breaks?</strong></p></li>
+<li><p>When you view the <code>players</code> data set, <strong>how many players are playing in the attacker position?</strong></p></li>
+<li><p>When you view the <code>teams</code> data set, <strong>how many teams were in the league starting their first season since 2016?</strong></p></li>
+</ol>
+</div>
+</div>
+</section>
+<section id="loading-portland-thorns-fc-matches-2023" class="level2">
+<h2 class="anchored" data-anchor-id="loading-portland-thorns-fc-matches-2023">Loading Portland Thorns FC Matches 2023</h2>
+<p>Now that we have the data loaded, we need to start manipulating and cleaning the data to narrow down the information we want to analyze.If you notice, the data we have contains all the teams, all the seasons, and all the players, which is not very effective when answering research questions. Hence, for this lab, we are going to narrow down the information to show only the Portland Thorns FC team and their performance in the 2023 season.</p>
+<p>Create a variable that contains the id of Portland Thorns FC so we can filter the matches they played in 2023.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>portland_thorns_id <span class="ot">&lt;-</span> teams <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(team_name <span class="sc">==</span> <span class="st">"Portland Thorns FC"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(external_team_id)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Replace ID_VARIABLE_NAME with the answer for Exercise 1.a</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now that you have a variable by which you can refer to the id of the team. Filter the matches data set to only show the match id’s where Portland Thorns FC played.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>portland_thorns_matches <span class="ot">&lt;-</span> matches <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>((home_team_id <span class="sc">==</span> portland_thorns_id <span class="sc">|</span> away_team_id <span class="sc">==</span> portland_thorns_id) <span class="sc">&amp;</span> season <span class="sc">==</span> <span class="st">"2023"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(match_id)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Replace the MATCH_ID_NAME with the id of the matches where portland thorns fc played</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#You got it right if in your environment you see 'chr [1:23] "portland-thorns-fc..."'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Finally, now that you have the match id’s for all the matches that Portland Thorns FC played in 2023, you can load the player match stats and team match stats for those matches.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load player stats for all 2023 Portland Thorns matches</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>all_thorns_player_stats <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  portland_thorns_matches, </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span> <span class="fu">load_player_match_stats</span>(<span class="at">match_id =</span> .x)  </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(team_id <span class="sc">==</span> portland_thorns_id)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Load team stats for all 2023 Portland Thorns matches</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>team_match_stats <span class="ot">&lt;-</span> <span class="fu">map_dfr</span>(</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  portland_thorns_matches, </span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span> <span class="fu">load_team_match_stats</span>(<span class="at">match_id =</span> .x)  </span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(team_id <span class="sc">==</span> portland_thorns_id <span class="sc">&amp;</span> period <span class="sc">==</span> <span class="st">'total'</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#Load team season stats for Portland Thorns FC performance in 2023</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>portland_thorns_team_season_stats <span class="ot">&lt;-</span> <span class="fu">load_team_season_stats</span>(</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">team_id =</span> <span class="st">"POR"</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">season =</span> <span class="st">"2023"</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can use the names() to list the variables that are available in the ‘all_thorns_player_stats’, ‘portland_thorns_team_season_stats’ and ‘team_match_stats’. It makes it easier to see the columns that are available to use for analysis.</p>
+<p>Hint. (names(all_thorns_player_stats) should look a bit like this)</p>
+<pre><code>  [1] "match_id"                                   
+  [2] "team_id"                                      
+  [3] "player_id"                                  
+  [4]"keeper_pick_up"                               
+  [5] "long_balls_total"                           
+  [6] "accurate_back_zone_pass"                      
+  [7] "long_passess_successful"                    
+  [8] "shots_conceded_outside_box"                   
+  [9] "saves_in_box"                               
+  [10] "launches_accurate"    
+  [...] ...</code></pre>
+<div class="callout callout-style-default callout-note callout-titled" title="Exercise 2">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise 2
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="a">
+<li><p>Based on the column information that you see in the ‘all_thorns_player_stats’ and ‘team_match_stats’, <strong>what are some research questions that you could solve?</strong></p></li>
+<li><p><strong>What are some potential column variables that you could use to determine the defensive or offensive stat of Portland Thorns FC?</strong></p></li>
+<li><p><strong>What is the total number of goals scored by Portland Thorns FC in 2023?</strong></p></li>
+<li><p><strong>What is the highest amount of goals a Portland Thorn FC player scored in a match in 2023?</strong></p></li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+<section id="research-question-1" class="level1 page-columns page-full">
+<h1>Research Question 1</h1>
+<p>Now that we have the data. It is time to interpret the information within the tables to answer different research questions.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Research Question 1">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Research Question 1
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Research Question: Is a defensive lineup effective for the Portland Thorns FC team for scoring goals?</p>
+</div>
+</div>
+<p>When thinking on the effectiveness of a defensive lineup in scoring goals, it all relies in counter fastbreak! What this means is that the Portland Thorns FC will purposefully allow the rival team to have more possession of the ball, forcing the rival team to push and leave their defense weaker as it has less players. Hence, if Portland is able to steal the ball and start a counter fastbreak attack, they will have much better chances to score a goal as there will be less defenders.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p>A fast break in soccer refers to a quick offensive move where a team attempts to advance the ball rapidly toward the opponent’s goal before the defense can organize itself. This strategy often occurs when the defending team is caught out of position, such as when they have pushed up high and lack depth, making them vulnerable to through balls.The objective is to exploit the space and create scoring opportunities by maintaining possession and moving the ball quickly.</p>
+</div></div><section id="loading-the-defensive-stats-information-from-portland-thorns-fc" class="level2">
+<h2 class="anchored" data-anchor-id="loading-the-defensive-stats-information-from-portland-thorns-fc">Loading the defensive stats information from Portland Thorns FC</h2>
+<p>To do this, we are going to need to extract the needed information for all the variables that are relevant regarding Portland Thorns FC being able to do counters. Hence, variables like fastbreaks, possession, shots, goals, etc are relevant.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fastbreak_stats <span class="ot">&lt;-</span> all_thorns_player_stats <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    player_id, match_id, team_id, </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">contains</span>(<span class="st">"fastbreaks"</span>),          </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">contains</span>(<span class="st">"shots_fastbreak"</span>), </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">contains</span>(<span class="st">"goals_fastbreak"</span>), </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    goals, assists, shots_total     </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace VAR1, VAR2, VAR3 with the variables that you think are important to analyze the effectiveness of a defensive lineup. You can also add a comma and add even more variables if you think they are important.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Use again the View() function to see the data that you have filtered. You can also use the Names() function to see the variables that are available in the ‘fastbreak_stats’ variable.</p>
+<p>Hint. (View(fastbreak) should look a bit like this)</p>
+<table class="table">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>player_id</strong></th>
+<th style="text-align: left;"><strong>match_id</strong></th>
+<th style="text-align: left;"><strong>team_id</strong></th>
+<th style="text-align: left;"><strong>fastbreaks</strong></th>
+<th style="text-align: left;"><strong>shots_fastbreak</strong></th>
+<th style="text-align: left;">…</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>1</strong></td>
+<td style="text-align: left;">364</td>
+<td style="text-align: left;">portland-thorns-fc-vs-orlando-pride-2023-03-26</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>2</strong></td>
+<td style="text-align: left;">205</td>
+<td style="text-align: left;">portland-thorns-fc-vs-orlando-pride-2023-03-26</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">…</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>3</strong></td>
+<td style="text-align: left;">77</td>
+<td style="text-align: left;">portland-thorns-fc-vs-orlando-pride-2023-03-26</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>4</strong></td>
+<td style="text-align: left;">309</td>
+<td style="text-align: left;">portland-thorns-fc-vs-orlando-pride-2023-03-26</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">…</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled" title="Exercise 3">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise 3
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="a">
+<li><p><strong>Why some ‘fastbreaks’ are presented as 0 attempts, and some are presented as NA?</strong></p></li>
+<li><p><strong>What is the total number of fastbreaks attempted by Portland Thorns FC in 2023?</strong></p></li>
+<li><p>Based on the variables you wrote, <strong>what is an interesting observation on the defensive stats of the team?</strong></p></li>
+<li><p><strong>Which Portland Thorns FC player had the most attempts of fastbreak shots in 2023?</strong></p></li>
+</ol>
+</div>
+</div>
+</section>
+<section id="visualizing-portland-thorns-fc-fastbreak-stats" class="level2">
+<h2 class="anchored" data-anchor-id="visualizing-portland-thorns-fc-fastbreak-stats">Visualizing Portland Thorns FC fastbreak stats</h2>
+<p>Now that you have the data filtered, you can start visualizing the data to see if there are any patterns or trends that can be observed.</p>
+<p>Use the sum() function and mean() function to create variables that determine the total number of fastbreaks, shots_fastbreak, and goals_fastbreak for Portland Thorns FC in 2023.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create a new variable that calculate the total sums of fastbreaks and shots_fastbreak for each player</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>total_fastbreaks <span class="ot">&lt;-</span> <span class="fu">sum</span>(fastbreak_stats<span class="sc">$</span>fastbreaks, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>total_fastbreaks_shots <span class="ot">&lt;-</span> <span class="fu">sum</span>(fastbreak_stats<span class="sc">$</span>shots_fastbreak, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>total_fastbreaks_goals <span class="ot">&lt;-</span> <span class="fu">sum</span>(fastbreak_stats<span class="sc">$</span>goals_fastbreak, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Using the same functions, now also try to get the average of possession percentage within the team_match_stats variable. This will help you understand how much possession Portland Thorns FC had in their matches in 2023.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#I want to get the average of possession_pct within team_match_stats_total</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>average_possession_pct <span class="ot">&lt;-</span> <span class="fu">mean</span>(team_match_stats<span class="sc">$</span>possession_pct, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Use the code below to make a visualization of the data you just created. This will help you see the effectiveness of Portland Thorns FC in converting fastbreaks into shot opportunities.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>attempts_to_shots <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">stage =</span> <span class="fu">c</span>(<span class="st">"Fastbreak Attempts"</span>, <span class="st">"Shot Opportunities"</span>),</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">count =</span> <span class="fu">c</span>(total_fastbreaks, total_fastbreaks_shots),</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">conversion_rate =</span> <span class="fu">c</span>(<span class="dv">100</span>, (total_fastbreaks_shots<span class="sc">/</span>total_fastbreaks)<span class="sc">*</span><span class="dv">100</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create visualization</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(attempts_to_shots, <span class="fu">aes</span>(<span class="at">x =</span> stage, <span class="at">y =</span> count, <span class="at">fill =</span> stage)) <span class="sc">+</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(count, <span class="st">"</span><span class="sc">\n</span><span class="st">("</span>, <span class="fu">round</span>(conversion_rate, <span class="dv">1</span>), <span class="st">"%)"</span>)), </span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#8C489F"</span>, <span class="st">"#FFD700"</span>)) <span class="sc">+</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Portland Thorns FC: Fastbreak to Shot Conversion (2023)"</span>,</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste</span>(<span class="st">"Conversion Rate:"</span>, <span class="fu">round</span>((total_fastbreaks_shots<span class="sc">/</span>total_fastbreaks)<span class="sc">*</span><span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%"</span>),</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Count"</span>,</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Data: NWSL (2023)"</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>),</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"none"</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Finally, use the code below to make the final visualization of the data to see the effectiveness of Portland Thorns FC in converting fastbreaks shot opportunities into actual goals.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>shot_goal_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">stage =</span> <span class="fu">c</span>(<span class="st">"Shot Opportunities"</span>, <span class="st">"Goals"</span>),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">count =</span> <span class="fu">c</span>(total_fastbreaks_shots, total_fastbreaks_goals),</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">conversion_rate =</span> <span class="fu">c</span>(</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="dv">100</span>,  <span class="co"># Baseline (all shots)</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    (total_fastbreaks_goals <span class="sc">/</span> total_fastbreaks_shots) <span class="sc">*</span> <span class="dv">100</span>  <span class="co"># Goals per shot</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(shot_goal_data, <span class="fu">aes</span>(<span class="at">x =</span> stage, <span class="at">y =</span> count, <span class="at">fill =</span> stage)) <span class="sc">+</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.6</span>, <span class="at">fill =</span> <span class="fu">c</span>(<span class="st">"#FFD700"</span>, <span class="st">"#006341"</span>)) <span class="sc">+</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(count, <span class="st">"</span><span class="sc">\n</span><span class="st">("</span>, <span class="fu">round</span>(conversion_rate, <span class="dv">1</span>), <span class="st">"%)"</span>)),</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">"black"</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Portland Thorns FC: Fastbreak Finishing (2023)"</span>,</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"How many shot opportunities resulted in goals?"</span>,</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Count"</span>,</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Data: NWSL (2023)"</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">16</span>),</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"none"</span></span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Exercise 4">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise 4
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="a">
+<li><p>Are the Portland Thorns FC effective in converting fastbreaks into shot opportunities? What variables do you think goes into this statistic?</p></li>
+<li><p>Are the Portland Thorns FC effective in converting fastbreaks shot opportunities into actual goals?</p></li>
+<li><p>Based on the average possession percentage, do you think the Portland Thorns FC is prioritizing to make more goals through fastbreaks (meaning less possession) or through a more aggressive lineup (more possession)?</p></li>
+<li><p>Is a defensive lineup effective for the Portland Thorns FC team for scoring goals?</p></li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+<section id="research-question-2" class="level1">
+<h1>Research Question 2</h1>
+<div class="callout callout-style-default callout-note callout-titled" title="Research Question 2">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Research Question 2
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Research Question: Is an offensive lineup effective for Portland Thorns FC for scoring goals?</p>
+</div>
+</div>
+<p>When thinking about the effectiveness of an offensive lineup in scoring goals, we need to consider all the variables that tells us whether Portland Thorns FC is effective to create opportunities even when there is a complete defense lineup in the rival team. Since a more offensive lineup relies in having more possession of the ball, Portland Thorns FC won’t rely on counter fastbreaks, meaning that there won’t be opportunities where Portland Thorns FC will attack while the rival team doesn’t have a weak incomplete defense. Hence, if Portland Thorns FC wants to be effective while having an offensive lineup, they need to be excel in dribbling through the rival players, pass each other effectively, and creating scoring opportunities.</p>
+<section id="loading-the-attack-stats-information-from-portland-thorns-fc" class="level2">
+<h2 class="anchored" data-anchor-id="loading-the-attack-stats-information-from-portland-thorns-fc">Loading the attack stats information from Portland Thorns FC</h2>
+<p>Same to how we did previously, we are going to extract the needed information for all the variables that are relevant regarding Portland Thorns FC offensive lineup effectiveness. Hence, variables related to creating scoring chances, eg. ‘big_chances_created’, dribbling effectiveness eg. ‘contest_won’, and passing effectiveness eg.’pass_pct_opposition_half’</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>offensive_team_stats <span class="ot">&lt;-</span> all_thorns_player_stats <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    player_id, match_id, team_id, </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">contains</span>(<span class="st">"big_chances_created"</span>),    </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">contains</span>(<span class="st">"big_chances_scored"</span>), </span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">contains</span>(<span class="st">"big_chances_missed"</span>), </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">contains</span>(<span class="st">"contests_total"</span>),</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">contains</span>(<span class="st">"contests_won"</span>),</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">contains</span>(<span class="st">'pass_pct_opposition_half'</span>),</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace VAR1, VAR2, VAR3 with the variables that you think are important to analyze the effectiveness of a defensive lineup. You can also add a comma and add even more variables if you think they are important.</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>pass_pct <span class="ot">&lt;-</span> portland_thorns_team_season_stats <span class="sc">%&gt;%</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(<span class="fu">contains</span>(<span class="st">'pass_pct_opposition_half'</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.numeric</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Use again the View() function to see the data that you have filtered. You can also use the Names() function to see the variables that are available in the ‘offensive_team_stats’ variable.</p>
+<p>Hint. (View(offensive_team_stats) should look a bit like this)</p>
+<table class="table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;"><strong>player_id</strong></th>
+<th style="text-align: left;"><strong>match_id</strong></th>
+<th style="text-align: left;"><strong>team_id</strong></th>
+<th style="text-align: left;"><strong>big_chances_created</strong></th>
+<th style="text-align: left;">…</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>1</strong></td>
+<td style="text-align: left;">364</td>
+<td style="text-align: left;">portland-thorns-fc-vs-orlando-pride-2023-03-26</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>2</strong></td>
+<td style="text-align: left;">205</td>
+<td style="text-align: left;">portland-thorns-fc-vs-orlando-pride-2023-03-26</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">…</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>3</strong></td>
+<td style="text-align: left;">77</td>
+<td style="text-align: left;">portland-thorns-fc-vs-orlando-pride-2023-03-26</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">…</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>4</strong></td>
+<td style="text-align: left;">309</td>
+<td style="text-align: left;">portland-thorns-fc-vs-orlando-pride-2023-03-26</td>
+<td style="text-align: left;">8</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">…</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+<td style="text-align: left;">…</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled" title="Exercise 5">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise 5
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="a">
+<li><p>Why some ‘big_chances_created’ are presented as 0 attempts, and some are presented as NA?</p></li>
+<li><p>How many big chances did Portland Thorns FC missed during the season of 2023</p></li>
+<li><p>Based on the variables you wrote, what is an interesting observation on the offensive stats of the team?</p></li>
+<li><p>What player_id won the most contests? How many contests?</p></li>
+</ol>
+</div>
+</div>
+</section>
+<section id="visualizing-portland-thorns-fc-offensive-stats" class="level2">
+<h2 class="anchored" data-anchor-id="visualizing-portland-thorns-fc-offensive-stats">Visualizing Portland Thorns FC offensive stats</h2>
+<p>Now that you have the data filtered, you can start visualizing the data to see if there are any patterns or trends that can be observed.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>total_contests <span class="ot">&lt;-</span> <span class="fu">sum</span>(offensive_team_stats<span class="sc">$</span>contests_total, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>total_contests_won <span class="ot">&lt;-</span> <span class="fu">sum</span>(offensive_team_stats<span class="sc">$</span>contests_won, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>total_big_chances_created <span class="ot">&lt;-</span> <span class="fu">sum</span>(offensive_team_stats<span class="sc">$</span>big_chances_created, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>total_big_chances_scored <span class="ot">&lt;-</span> <span class="fu">sum</span>(offensive_team_stats<span class="sc">$</span>big_chances_scored, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>total_big_chances_missed <span class="ot">&lt;-</span> <span class="fu">sum</span>(offensive_team_stats<span class="sc">$</span>big_chances_missed, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Another relevant information is the possession percentage information. Unfortunately, this information cannot be found within the offensive_team_stats dataset, but it needs to be interpreted from the portland_thorns_team_season_stats</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>pass_pct_opp_half <span class="ot">&lt;-</span> portland_thorns_team_season_stats <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(<span class="fu">contains</span>(<span class="st">'pass_pct_opposition_half'</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.numeric</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Use the code below to interpret the data regarding contests effectiveness of the portland thorns FC players.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>contest_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">category =</span> <span class="fu">c</span>(<span class="st">"Contests Won"</span>, <span class="st">"Contests Lost"</span>),</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">count =</span> <span class="fu">c</span>(total_contests_won, total_contests <span class="sc">-</span> total_contests_won)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(contest_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">"Contests"</span>, <span class="at">y =</span> count, <span class="at">fill =</span> category)) <span class="sc">+</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> count), <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#006341"</span>, <span class="st">"#8C489F"</span>)) <span class="sc">+</span>  <span class="co"># Thorns colors</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Portland Thorns FC: Contest Success (2023)"</span>,</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste0</span>(<span class="st">"Win rate: "</span>, <span class="fu">round</span>(total_contests_won <span class="sc">/</span> total_contests <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%"</span>),</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Total Contests"</span>,</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Outcome"</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Now use the code below to interpret the data regarding big chances being created by the Portland Thorns FC players</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>big_chance_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">stage =</span> <span class="fu">c</span>(<span class="st">"Created"</span>, <span class="st">"Scored"</span>),</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">count =</span> <span class="fu">c</span>(total_big_chances_created, total_big_chances_scored)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(big_chance_data, <span class="fu">aes</span>(<span class="at">x =</span> stage, <span class="at">y =</span> count, <span class="at">fill =</span> stage)) <span class="sc">+</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">abs</span>(count)), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#FFD700"</span>, <span class="st">"#8C489F"</span>)) <span class="sc">+</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Big Chances: Creation vs. Conversion (2023)"</span>,</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">paste0</span>(<span class="st">"Conversion rate: "</span>, <span class="fu">round</span>(total_big_chances_scored <span class="sc">/</span> total_big_chances_created <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>), <span class="st">"%"</span>),</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>,</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Count"</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Exercise 6">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise 6
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="a">
+<li><p>Are the Portland Thorns FC effective in converting big chances created into actual goals? Is it a better conversion compared to fastbreak goal opportunities created?</p></li>
+<li><p>Are the Portland Thorns FC players effective in winning contests? What variables do you think goes into this statistic?</p></li>
+<li><p>Based on the <code>pass_pct_opp_half</code>, are the Portland Thorns FC players effective in playing effectively passed the midfield in the rivals zone?</p></li>
+<li><p>Is an offensive lineup effective for Portland Thorns FC for scoring goals?</p></li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+<section id="wrap-up-reflection" class="level1">
+<h1>Wrap-up / reflection</h1>
+<p>Now that you have analyzed the data and visualized the information, it is time to reflect on the research questions that you answered. Then, answer the following final questions</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Exercise 7">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise 7
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="a">
+<li><p>What are some information that could benefit the relevancy of this lab? What are some variables that you would have liked to see in the data?</p></li>
+<li><p>In the case that Portland Thorns FC decides to adopt a more defensive lineup for scoring goals, what are the most important areas of improvement that they need to focus on?</p></li>
+<li><p>In the case that Portland Thorns FC decides to adopt a more offensive lineup for scoring goals, what are the most important areas of improvement that they need to focus on?</p></li>
+<li><p>Should Portland Thorns FC prioritize offensive or defensive strategies based on their 2023 performance?</p></li>
+</ol>
+</div>
+</div>
+</section>
+<section id="bonus" class="level1">
+<h1>BONUS</h1>
+<div class="callout callout-style-default callout-note callout-titled" title="Exercise 8">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise 8
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>BONUS: Find the defensive and offensive stats of another team that is not Portland Thorns FC, and compare them with the findings of this lab.</p>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -1,0 +1,349 @@
+---
+title: "National Women’s Soccer League"
+author: "YOUR NAME HERE"
+format:
+  html:
+    self-contained: true
+    toc: true
+    toc_float: true
+    number_section: false
+    highlight: tango
+editor: visual
+editor_options:
+  chunk_output_type: console
+---
+
+# Getting Started (Data Wrangling)
+
+## Loading Packages and Data
+
+```{r}
+#| label: load-packages
+#| message: false
+library(tidyverse)
+library(viridis)
+library(kableExtra)
+library(ggridges)
+library(scales)
+#install.packages("devtools")
+devtools::install_github("nwslR/nwslR", ref = "v0.0.0.9002")
+library(nwslR)
+```
+
+```{r}
+#| label: load-data
+#| message: false
+matches <- load_matches()
+players <- load_players()
+teams <- load_teams()
+metrics <- load_metrics()
+```
+
+```{r}
+View(VAR)
+#replace VAR with `players`, `teams`, and `metrics` to see the other data sets
+```
+
+## Exercise 1
+
+a.  `external_team_id`
+
+b.  
+
+    |                 |                                                          |
+    |---------------------|---------------------------------------------------|
+    | fastbreaks      | Total number of fast breaks that occurred                |
+    | goals_fastbreak | Goals scored from a fast break situation                 |
+    | shots_fastbreak | Shots made following a fast break situation              |
+    | shots_open_play | A shot attempt created from an open play or a fast break |
+
+c.  100
+
+d.  10
+
+## Loading Portland Thorns FC Matches 2023
+
+```{r}
+portland_thorns_id <- teams %>%
+  filter(team_name == ID_VARIABLE_NAME) %>%
+  pull(external_team_id)
+
+#Replace ID_VARIABLE_NAME with the answer for Exercise 1.a
+```
+
+```{r}
+
+portland_thorns_matches <- matches %>%
+  filter((home_team_id == portland_thorns_id | away_team_id == portland_thorns_id) & season == "2023") %>%
+  pull(match_id)
+
+#Replace the MATCH_ID_NAME with the id of the matches where portland thorns fc played
+#You got it right if in your environment you see 'chr [1:23] "portland-thorns-fc..."'
+
+```
+
+```{r}
+# Load player stats for all 2023 Portland Thorns matches
+all_thorns_player_stats <- map_dfr(
+  portland_thorns_matches, 
+  ~ load_player_match_stats(match_id = .x)  
+) %>%
+  filter(team_id == portland_thorns_id)
+
+# Load team stats for all 2023 Portland Thorns matches
+team_match_stats <- map_dfr(
+  portland_thorns_matches, 
+  ~ load_team_match_stats(match_id = .x)  
+) %>%
+  filter(team_id == portland_thorns_id & period == 'total')
+
+#Load team season stats for Portland Thorns FC performance in 2023
+portland_thorns_team_season_stats <- load_team_season_stats(
+  team_id = "POR",
+  season = "2023"
+)
+```
+
+## Exercise 2
+
+a.  eg. Who were Portland Thorns' most effective attackers in 2023? How reliant was the team on their goalkeeper?
+
+b.  eg.`goal`, `shots_total`, `shots_in_box`, `assists`, `assists_total`, `crosses_total`, `interceptions_total`, `clearances_total`, `blocks_defender`, `saves`, etc...
+
+c.  42
+
+d.  3
+
+# Research Question 1
+
+## Loading the defensive stats information from Portland Thorns FC
+
+```{r}
+fastbreak_stats <- all_thorns_player_stats %>%
+  select(
+    player_id, match_id, team_id, 
+    contains("fastbreaks"),          
+    contains("shots_fastbreak"), 
+    contains("goals_fastbreak"), 
+    VAR1, VAR2, VAR3     
+  )
+
+# Replace VAR1, VAR2, VAR3 with the variables that you think are important to analyze the effectiveness of a defensive lineup. You can also add a comma and add even more variables if you think they are important.
+
+```
+
+## Exercise 3
+
+a.  Error in recording information
+
+b.  16
+
+c.  eg. if `shots_total`was added, an interesting observation is to compare the amount of `fastbreaks_goals` to the `shots_total` to see how many of the shots taken were from fastbreaks.
+
+d.  496
+
+## Visualizing Portland Thorns FC fastbreak stats
+
+```{r}
+total_fastbreaks <- sum(DATA_SET_VAR$fastbreaks, na.rm = TRUE)
+total_fastbreaks_shots <- sum(DATA_SET_VAR$shots_fastbreak, na.rm = TRUE)
+total_fastbreaks_goals <- sum(DATA_SET_VAR$goals_fastbreak, na.rm = TRUE)
+
+#Replace DATA_SET_VAR with the dataset table where we are getting the information from
+```
+
+```{r}
+average_possession_pct <- mean(DATA_SET_VAR$possession_pct, na.rm = TRUE)
+#Replace DATA_SET_VAR with the dataset table where we are getting the information from
+```
+
+```{r}
+attempts_to_shots <- data.frame(
+  stage = c("Fastbreak Attempts", "Shot Opportunities"),
+  count = c(total_fastbreaks, total_fastbreaks_shots),
+  conversion_rate = c(100, (total_fastbreaks_shots/total_fastbreaks)*100)
+)
+
+# Create visualization
+ggplot(attempts_to_shots, aes(x = stage, y = count, fill = stage)) +
+  geom_col(width = 0.6) +
+  geom_text(aes(label = paste0(count, "\n(", round(conversion_rate, 1), "%)")), 
+            vjust = -0.5, size = 5) +
+  scale_fill_manual(values = c("#8C489F", "#FFD700")) +
+  labs(
+    title = "Portland Thorns FC: Fastbreak to Shot Conversion (2023)",
+    subtitle = paste("Conversion Rate:", round((total_fastbreaks_shots/total_fastbreaks)*100, 1), "%"),
+    x = NULL,
+    y = "Count",
+    caption = "Data: NWSL (2023)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    axis.text.x = element_text(size = 12),
+    legend.position = "none"
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.1)))
+```
+
+```{r}
+shot_goal_data <- data.frame(
+  stage = c("Shot Opportunities", "Goals"),
+  count = c(total_fastbreaks_shots, total_fastbreaks_goals),
+  conversion_rate = c(
+    100,  # Baseline (all shots)
+    (total_fastbreaks_goals / total_fastbreaks_shots) * 100  # Goals per shot
+  )
+)
+
+# Plot
+ggplot(shot_goal_data, aes(x = stage, y = count, fill = stage)) +
+  geom_col(width = 0.6, fill = c("#FFD700", "#006341")) +
+  geom_text(
+    aes(label = paste0(count, "\n(", round(conversion_rate, 1), "%)")),
+    vjust = -0.5, size = 5, color = "black"
+  ) +
+  labs(
+    title = "Portland Thorns FC: Fastbreak Finishing (2023)",
+    subtitle = "How many shot opportunities resulted in goals?",
+    x = NULL,
+    y = "Count",
+    caption = "Data: NWSL (2023)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    axis.text.x = element_text(size = 12),
+    legend.position = "none"
+  )
+```
+
+## Exercise 4
+
+a.  Yes. And some sample variables that could be realted:`contests`, `passes`, etc...
+
+b.  No
+
+c.  A slight inclination to be more offensive. However, it seems to be more balanced and lean to none.
+
+d.  There is a lot of potential. Portland Thorns is very effective to create opportunities from fastbreaks, but they are not converting them into goals. This is a good area to improve. If they can actually turn those opportunities into goals, Portland would be a really good team.
+
+# Research Question 2
+
+## Loading the attack stats information from Portland Thorns FC
+
+```{r}
+offensive_team_stats <- all_thorns_player_stats %>%
+  select(
+    player_id, match_id, team_id, 
+    contains("big_chances_created"),    
+    contains("big_chances_scored"), 
+    contains("big_chances_missed"), 
+    contains("contests_total"),
+    contains("contests_won"),
+    contains('pass_pct_opposition_half'),
+    VAR1, VAR2, VAR3
+  )
+
+# Replace VAR1, VAR2, VAR3 with the variables that you think are important to analyze the effectiveness of a defensive lineup. You can also add a comma and add even more variables if you think they are important.
+
+pass_pct <- portland_thorns_team_season_stats %>%
+  pull(contains('pass_pct_opposition_half')) %>%
+  as.numeric()
+
+```
+
+## Exercise 5
+
+a.  Error in recording information
+
+b.  41
+
+c.  eg. if student searched for `shots_outside_box_center_far`, he could make an observation of how many of those shots made were from far away, or close to the goalkeeper area.
+
+d.  496, 7
+
+## Visualizing Portland Thorns FC offensive stats
+
+```{r}
+total_contests <- sum(DATA_SET_VAR$contests_total, na.rm = TRUE)
+total_contests_won <- sum(DATA_SET_VAR$contests_won, na.rm = TRUE)
+total_big_chances_created <- sum(DATA_SET_VAR$big_chances_created, na.rm = TRUE)
+total_big_chances_scored <- sum(DATA_SET_VAR$big_chances_scored, na.rm = TRUE)
+total_big_chances_missed <- sum(DATA_SET_VAR$big_chances_missed, na.rm = TRUE)
+
+#Replace DATA_SET_VAR with the dataset table where we are getting the information from
+```
+
+```{r}
+pass_pct_opp_half <- portland_thorns_team_season_stats %>%
+  pull(contains('pass_pct_opposition_half')) %>%
+  as.numeric()
+```
+
+```{r}
+contest_data <- data.frame(
+  category = c("Contests Won", "Contests Lost"),
+  count = c(total_contests_won, total_contests - total_contests_won)
+)
+
+ggplot(contest_data, aes(x = "Contests", y = count, fill = category)) +
+  geom_col() +
+  geom_text(aes(label = count), position = position_stack(vjust = 0.5)) +
+  scale_fill_manual(values = c("#006341", "#8C489F")) +  # Thorns colors
+  labs(
+    title = "Portland Thorns FC: Contest Success (2023)",
+    subtitle = paste0("Win rate: ", round(total_contests_won / total_contests * 100, 1), "%"),
+    x = NULL,
+    y = "Total Contests",
+    fill = "Outcome"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+big_chance_data <- data.frame(
+  stage = c("Created", "Scored"),
+  count = c(total_big_chances_created, total_big_chances_scored)
+)
+
+ggplot(big_chance_data, aes(x = stage, y = count, fill = stage)) +
+  geom_col() +
+  geom_text(aes(label = abs(count)), vjust = -0.5) +
+  scale_fill_manual(values = c("#FFD700", "#8C489F")) +
+  labs(
+    title = "Big Chances: Creation vs. Conversion (2023)",
+    subtitle = paste0("Conversion rate: ", round(total_big_chances_scored / total_big_chances_created * 100, 1), "%"),
+    x = NULL,
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+
+## Exercise 6
+
+a.  Yes. No, while it is effective, it is not as high as fastbreak conversion.
+
+b.  Yes. Eg. any dribble `dribble` variable would be meaningful
+
+c.  Yes. Portland Thorns FC is effective in playing passed in the opposition half as they can maintain posession and make more effective passes than not
+
+d.  Overall yes. While it has less potential to make chances compared to counter fastbreaks, Portland Thorns FC has qualities to still be effective to play passed the midfield. Hence, depending on how risky it is to rely on counter fastbreak, having an offensive lineup could be a safer option.
+
+# Wrap-up / reflection
+
+## Exercise 7
+
+a.  Eg. `dribble` variables, `crosses`, `passes`, `contests`, `interceptions`, etc...
+
+b.  Shooting accuracy and effectiveness. If they can improve their shooting accuracy, they can convert their high chances of shooting into goals.
+
+c.  While contests is still effective a little bit effective, it is not a very good statistic to rely your attacks on. Improving players ability to dribble pass defenders and make accurate passes would make an offensive lineup more effective
+
+d.  eg. Defensive lineup has more potential. Hence, I would recommend Porland Thorns FC to adopt that strategy, yet with a focus on improving their shooting skills. While it might not be effective right away, in the log term, I can see this a worth investment.
+
+# BONUS
+
+## Exercise 8
+
+Bonus. eg. `Chicago Red Stars` has a much better offensive lineup statistic than Portland Thorns FC and worse defensive lineup.
